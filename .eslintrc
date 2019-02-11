@@ -1,0 +1,8 @@
+{
+  "env": {
+    "mocha": true,
+    "node": true,
+    "commonjs": true
+  },
+  "extends": "./config/eslintconfig.js"
+}
