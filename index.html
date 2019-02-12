@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href=".src/css/style.css">
-  <script src=".src/js/index.js"></script>
-  <title>AngularJS</title>
+	<title>angularJS</title>
+	<link rel="stylesheet" href="src/css/reset.css">
+	<script defer src="src/js/index.js"></script>
 </head>
 
-<body>
-
+<body ng-app ng-init="name='ivan'">
+	<div ng-show="true"> hi Ivan!!! </div>
+	<input ng-model="name" />
+	<p ng-make-short>qqq qqq qqq qqq qqq qqq qqq</p>
+	<p ng-bind="name"></p>
 </body>
 
 </html>
