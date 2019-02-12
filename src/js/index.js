@@ -1,22 +1,19 @@
 /* eslint-disable */
 (() => {
-  const directives = [];
+  const directives = {};
 
   const smallAngular = {
     directive(name, fn) {
-      const index = directives.findIndex(el => Object.keys(el)[0] === name);
-  
-      if (index === -1) {
-        directives.push({[name]: [fn]});
+      if (Object.keys(directives).includes(name)) {
+        directives[name].push(fn);
       }
   
-      if (index !== -1) {
-        directives[index][name].push(fn);
+      if (!Object.keys(directives).includes(name)) {
+        directives[name] = [fn];
       }
     },
 
     compile(node) {
-
       directives['ng-click'].forEach(cb => cb(node))
     },
 
@@ -54,7 +51,3 @@
 
 
 smallAngular.bootstrap()
-
-// mount app to this node
-// or 
-// find data attr ng-app - mount app to this node
