@@ -1,6 +1,9 @@
-(function() {
+/* eslint-disable */
+(() => {
+  const directives = [];
+
   const smallAngular = {
-    directive(name, fn)  {
+    directive(name, fn) {
       const index = directives.findIndex(el => Object.keys(el)[0] === name);
   
       if (index === -1) {
@@ -12,41 +15,46 @@
       }
     },
 
-    compile(node){
+    compile(node) {
+
       directives['ng-click'].forEach(cb => cb(node))
     },
-    bootstrap(node) {
 
-      node.queryselectorAll('*').forEach(el => {
-        compile(el)
+    bootstrap(node) {
+      node = node || [...document.querySelectorAll('*')].find(el => el.hasAttribute('ng-app'));
+
+      node.querySelectorAll('*').forEach(el => {
+        this.compile(el)
       })
     }
   }
 
-  smallAngular.directive('ng-model', function(el){
-
-  })
-  smallAngular.directive('ng-click', function(el){
-
+  smallAngular.directive('ng-model', function(el) {
+    console.log('called directive ng-show on element', el)
   })
 
-  smallAngular.directive('ng-show', function(el){
-
+  smallAngular.directive('ng-click', function(el) {
+    console.log('called directive ng-show on element', el)
   })
 
-  smallAngular.directive('ng-hide', function(el){
-
+  smallAngular.directive('ng-show', function(el) {
+    console.log('called directive ng-show on element', el)
   })
-  
+
+  smallAngular.directive('ng-hide', function(el) {
+    console.log('called directive ng-show on element', el)
+  })
+
   window.smallAngular = smallAngular;
 })()
 
-smallAngular.directive('make_short', function(el){
+// smallAngular.directive('make_short', function(el){
 
-})
+// })
 
 
-smallAngular.bootstrap(node) /*
-mount app to this node
-or 
-find data attr ng-app - mount app to this node
+smallAngular.bootstrap()
+
+// mount app to this node
+// or 
+// find data attr ng-app - mount app to this node
