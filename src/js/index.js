@@ -14,7 +14,11 @@
     },
 
     compile(node) {
-      directives['ng-click'].forEach(cb => cb(node))
+      [...node.attributes].forEach(attr => {
+        if(directives[attr.nodeName]) {
+          directives[attr.nodeName].forEach(cb => cb(node))
+        }
+      })
     },
 
     bootstrap(node) {
