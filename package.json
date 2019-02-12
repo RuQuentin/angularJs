@@ -1,12 +1,12 @@
 {
-  "name": "fileupload",
+  "name": "angularjs",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "src/js/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint --ext .js src/",
-    "start": "node server.js"
+    "start": "index.html"
   },
   "pre-commit": [
     "lint"
@@ -14,8 +14,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4",
-    "express-fileupload": "^1.0.0",
     "eslint": "^5.12.1",
     "pre-commit": "^1.2.2",
     "eslint-config-airbnb-base": "^12.0.2",
