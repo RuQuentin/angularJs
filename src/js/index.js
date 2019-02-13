@@ -4,11 +4,11 @@
 
   const smallAngular = {
     directive(name, fn) {
-      if (Object.keys(directives).includes(name)) {
+      if (directives[name]) {
         directives[name].push(fn);
       }
   
-      if (!Object.keys(directives).includes(name)) {
+      if (!directives[name]) {
         directives[name] = [fn];
       }
     },
@@ -22,9 +22,9 @@
     },
 
     bootstrap(node) {
-      node = node || [...document.querySelectorAll('*')].find(el => el.hasAttribute('ng-app'));
+      this.node = node || document.querySelector('[ng-app]');
 
-      node.querySelectorAll('*').forEach(el => {
+      this.node.querySelectorAll('*').forEach(el => {
         this.compile(el)
       })
     }
@@ -45,6 +45,16 @@
   smallAngular.directive('ng-hide', function(el) {
     console.log('called directive ng-show on element', el)
   })
+
+  // smallAngular.directive('ng-init', function(el) {
+  //   const expression = el.getAttribute('ng-init');
+  //   eval(expression);
+
+  //   smallAngular.node.querySelectorAll('*').forEach(el => {
+  //     const text = el.textContent.match(/{{.+?}}/ig);
+  //     console.log(text)
+  //   })
+  // })
 
   window.smallAngular = smallAngular;
 })()
