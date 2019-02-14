@@ -1,17 +1,17 @@
+/* eslint-disable no-eval */
 (function() {
-  // ========== HELPING FUNCTIONS ============
-  function _runExpression(node, ngName) {
-    const expression = node.getAttribute(ngName);
-
-    // eslint-disable-next-line no-eval
-    return eval(expression);
-  }
-
-  // =========================================
-
   const directives = {};
+  const watchers = {};
 
   const rootScope = window;
+
+  rootScope.$watch = (name, watcher) => {
+    watchers[name] = watcher;
+  };
+
+  rootScope.$apply = () => {
+    watchers.forEach(watcher => watcher());
+  };
 
   const smallAngular = {
     directive(name, fn) {
@@ -23,11 +23,20 @@
     },
 
     compile(node) {
-      const attrs = node.getAttributeNames();
+      const attrsNg = [];
+      const attrsRest = {};
 
-      attrs.forEach(attr => {
+      node.getAttributeNames().forEach(el => {
+        if ((/^ng-.+/ig).test(el)) {
+          attrsNg.push(el);
+        } else {
+          attrsRest[el] = node.getAttribute(el);
+        }
+      });
+
+      attrsNg.forEach(attr => {
         if (directives[attr]) {
-          directives[attr].forEach(cb => cb(rootScope, node, attrs));
+          directives[attr].forEach(cb => cb(rootScope, node, attrsRest));
         }
       });
     },
@@ -46,41 +55,69 @@
     console.log('called directive ng-show on element', scope, node, attrs);
   });
 
-  smallAngular.directive('ng-click', function(scope, node, attrs) {
+  smallAngular.directive('ng-bind', function(scope, node, attrs) {
     // eslint-disable-next-line no-console
-    console.log('called directive ng-show on element', scope, node, attrs);
+    console.log('called directive ng-bind on element', scope, node, attrs);
+  });
+
+  smallAngular.directive('ng-make-short', function(scope, node, attrs) {
+    // eslint-disable-next-line no-console
+    console.log('called directive ng-make-short on element', scope, node, attrs);
+  });
+
+  smallAngular.directive('ng-click', function(scope, node, attrs) {
+    // const data = node.getAttribute('ng-click');
+    // node.addEventListener('click', eval(data));
+  });
+
+  smallAngular.directive('ng-random-color', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-random-color');
+
+    function setRandomColor() {
+      node.style.backgroundColor = `rgb(
+        ${Math.floor(Math.random() * (255 - 0))},
+        ${Math.floor(Math.random() * (255 - 0))},
+        ${Math.floor(Math.random() * (255 - 0))}
+        )`;
+    }
+
+    node.addEventListener('click', setRandomColor);
   });
 
 
   smallAngular.directive('ng-show', function(scope, node, attrs) {
-    const result = _runExpression(node, 'ng-show');
+    const data = node.getAttribute('ng-show');
 
-    if (result && node.classList.contains('ng-hide')) {
-      node.classList.remove('ng-hide');
+    function ngShow(data) {
+      const result = eval(data);
+      const hasToBeShown = result && node.classList.contains('ng-hide');
+      const hasToBeHidden = !result && !node.classList.contains('ng-hide');
+
+      if (hasToBeShown || hasToBeHidden) {
+        node.classList.toggle('ng-hide');
+      }
     }
 
-    if (!result && !node.classList.contains('ng-hide')) {
-      node.classList.add('ng-hide');
-    }
-
-    // eslint-disable-next-line no-console
-    console.log('called directive ng-show on element', scope, node, attrs);
+    ngShow(data);
+    scope.$watch(data, ngShow);
   });
 
 
   smallAngular.directive('ng-hide', function(scope, node, attrs) {
-    const result = _runExpression(node, 'ng-hide');
+    const data = node.getAttribute('ng-show');
 
-    if (result && !node.classList.contains('ng-hide')) {
-      node.classList.add('ng-hide');
+    function ngHide(data) {
+      const result = eval(data);
+      const hasToBeHidden = result && !node.classList.contains('ng-hide');
+      const hasToBeShown = !result && node.classList.contains('ng-hide');
+
+      if (hasToBeHidden || hasToBeShown) {
+        node.classList.add('ng-hide');
+      }
     }
 
-    if (!result && node.classList.contains('ng-hide')) {
-      node.classList.remove('ng-hide');
-    }
-
-    // eslint-disable-next-line no-console
-    console.log('called directive ng-hide on element', scope, node, attrs);
+    ngHide(data);
+    scope.$watch(data, ngHide);
   });
 
   // smallAngular.directive('ng-init', function(el) {

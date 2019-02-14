@@ -3,7 +3,8 @@
 
 <head>
 	<title>angularJS</title>
-	<link rel="stylesheet" href="src/css/reset.css">
+	<!-- <link rel="stylesheet" href="src/css/reset.css"> -->
+	<link rel="stylesheet" href="src/css/style.css">
 	<link rel="stylesheet" href="src/css/ng-styles.css">
 	<script defer src="src/js/index.js"></script>
 </head>
@@ -11,8 +12,10 @@
 <body ng-app ng-init="name='ivan'">
 	<div ng-show="true"> hi Ivan!!! </div>
 	<input ng-model="name" />
-	<p ng-make-short>qqq qqq qqq qqq qqq qqq qqq</p>
-	<p ng-bind="name"></p>
+	<p ng-make-short length="10" random-color>qqq qqq qqq qqq qqq qqq qqq</p>
+	<p ng-bind="name" data="[1, 2, 3]"></p>
+	<button ng-click="" class="button">Change List Order</button>
+	<button ng-random-color class="button">Change Button Color</button>
 </body>
 
 </html>
