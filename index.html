@@ -9,12 +9,14 @@
 	<script defer src="src/js/index.js"></script>
 </head>
 
-<body ng-app ng-init="name='ivan'">
-	<div ng-show="true"> hi Ivan!!! </div>
+<body ng-app ng-init="name='vasya'">
+	<div ng-init="name='vasya'"></div>
+	<div ng-show="name==='ivan'"> hi Ivan!!! </div>
 	<input ng-model="name" />
 	<p ng-make-short length="10" random-color>qqq qqq qqq qqq qqq qqq qqq</p>
 	<p ng-bind="name" data="[1, 2, 3]"></p>
-	<button ng-click="" class="button">Change List Order</button>
+	<button ng-click="onClick1()" class="button">Change Name to Ivan (show)</button>
+	<button ng-click="onClick2()" class="button">Change Name to Vasya (hide)</button>
 	<button ng-random-color class="button">Change Button Color</button>
 </body>
 

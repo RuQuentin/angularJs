@@ -1,16 +1,26 @@
 /* eslint-disable no-eval */
 (function() {
   const directives = {};
-  const watchers = {};
+  const watchers = [];
 
   const rootScope = window;
 
+  rootScope.onClick1 = () => {
+    rootScope.name = 'ivan';
+  };
+
+  rootScope.onClick2 = () => {
+    rootScope.name = 'vasya';
+  };
+
   rootScope.$watch = (name, watcher) => {
-    watchers[name] = watcher;
+    watchers.push({ name, watcher });
   };
 
   rootScope.$apply = () => {
-    watchers.forEach(watcher => watcher());
+    watchers.forEach(({ watcher }) => {
+      watcher();
+    });
   };
 
   const smallAngular = {
@@ -52,33 +62,39 @@
 
   smallAngular.directive('ng-model', function(scope, node, attrs) {
     // eslint-disable-next-line no-console
-    console.log('called directive ng-show on element', scope, node, attrs);
+    // console.log('called directive ng-show on element', scope, node, attrs);
   });
 
   smallAngular.directive('ng-bind', function(scope, node, attrs) {
     // eslint-disable-next-line no-console
-    console.log('called directive ng-bind on element', scope, node, attrs);
+    // console.log('called directive ng-bind on element', scope, node, attrs);
   });
 
   smallAngular.directive('ng-make-short', function(scope, node, attrs) {
     // eslint-disable-next-line no-console
-    console.log('called directive ng-make-short on element', scope, node, attrs);
+    // console.log('called directive ng-make-short on element', scope, node, attrs);
+  });
+
+  smallAngular.directive('ng-init', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-init');
+    eval(data);
   });
 
   smallAngular.directive('ng-click', function(scope, node, attrs) {
-    // const data = node.getAttribute('ng-click');
-    // node.addEventListener('click', eval(data));
+    function ngClick() {
+      const data = node.getAttribute('ng-click');
+      node.addEventListener('click', () => {
+        eval(data);
+        scope.$apply();
+      });
+    }
+
+    ngClick();
   });
 
   smallAngular.directive('ng-random-color', function(scope, node, attrs) {
-    const data = node.getAttribute('ng-random-color');
-
     function setRandomColor() {
-      node.style.backgroundColor = `rgb(
-        ${Math.floor(Math.random() * (255 - 0))},
-        ${Math.floor(Math.random() * (255 - 0))},
-        ${Math.floor(Math.random() * (255 - 0))}
-        )`;
+      node.style.backgroundColor = `#${Math.floor(Math.random() * 16581375).toString(16)}`;
     }
 
     node.addEventListener('click', setRandomColor);
@@ -86,9 +102,8 @@
 
 
   smallAngular.directive('ng-show', function(scope, node, attrs) {
-    const data = node.getAttribute('ng-show');
-
-    function ngShow(data) {
+    function ngShow() {
+      const data = node.getAttribute('ng-show');
       const result = eval(data);
       const hasToBeShown = result && node.classList.contains('ng-hide');
       const hasToBeHidden = !result && !node.classList.contains('ng-hide');
@@ -98,15 +113,14 @@
       }
     }
 
-    ngShow(data);
-    scope.$watch(data, ngShow);
+    ngShow();
+    scope.$watch(node.getAttribute('ng-show'), ngShow);
   });
 
 
   smallAngular.directive('ng-hide', function(scope, node, attrs) {
-    const data = node.getAttribute('ng-show');
-
-    function ngHide(data) {
+    function ngHide(node) {
+      const data = node.getAttribute('ng-show');
       const result = eval(data);
       const hasToBeHidden = result && !node.classList.contains('ng-hide');
       const hasToBeShown = !result && node.classList.contains('ng-hide');
@@ -116,8 +130,8 @@
       }
     }
 
-    ngHide(data);
-    scope.$watch(data, ngHide);
+    ngHide();
+    scope.$watch(node.getAttribute('ng-show'), ngHide);
   });
 
   // smallAngular.directive('ng-init', function(el) {
