@@ -36,11 +36,11 @@
       const attrsNg = [];
       const attrsRest = {};
 
-      node.getAttributeNames().forEach(el => {
-        if ((/^ng-.+/ig).test(el)) {
-          attrsNg.push(el);
+      node.getAttributeNames().forEach(attr => {
+        if ((/^ng-.+/ig).test(attr)) {
+          attrsNg.push(attr);
         } else {
-          attrsRest[el] = node.getAttribute(el);
+          attrsRest[attr] = node.getAttribute(attr);
         }
       });
 
@@ -54,6 +54,7 @@
     bootstrap(node) {
       this.node = node || document.querySelector('[ng-app]');
 
+      this.compile(this.node);
       this.node.querySelectorAll('*').forEach(el => {
         this.compile(el);
       });
@@ -61,8 +62,16 @@
   };
 
   smallAngular.directive('ng-model', function(scope, node, attrs) {
-    // eslint-disable-next-line no-console
-    // console.log('called directive ng-show on element', scope, node, attrs);
+    const variable = node.getAttribute('ng-model');
+
+    function updateVariableValue() {
+      scope[variable] = node.value;
+      scope.$apply();
+    }
+
+    node.addEventListener('keyup', () => {
+      node.onchange = updateVariableValue();
+    });
   });
 
   smallAngular.directive('ng-bind', function(scope, node, attrs) {
@@ -81,15 +90,12 @@
   });
 
   smallAngular.directive('ng-click', function(scope, node, attrs) {
-    function ngClick() {
-      const data = node.getAttribute('ng-click');
-      node.addEventListener('click', () => {
-        eval(data);
-        scope.$apply();
-      });
-    }
+    const data = node.getAttribute('ng-click');
 
-    ngClick();
+    node.addEventListener('click', () => {
+      eval(data);
+      scope.$apply();
+    });
   });
 
   smallAngular.directive('ng-random-color', function(scope, node, attrs) {
