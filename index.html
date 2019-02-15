@@ -3,15 +3,33 @@
 
 <head>
 	<title>angularJS</title>
-	<link rel="stylesheet" href="src/css/reset.css">
+	<!-- <link rel="stylesheet" href="src/css/reset.css"> -->
+	<link rel="stylesheet" href="src/css/style.css">
+	<link rel="stylesheet" href="src/css/ng-styles.css">
 	<script defer src="src/js/index.js"></script>
 </head>
 
-<body ng-app ng-init="name='ivan'">
-	<div ng-show="true"> hi Ivan!!! </div>
-	<input ng-model="name" />
-	<p ng-make-short>qqq qqq qqq qqq qqq qqq qqq</p>
-	<p ng-bind="name"></p>
+<body ng-app ng-init="name=''">
+	<div class="container">
+		<label class="input-label">Enter your name here
+			<input ng-model="name" class="input-field" />
+		</label>
+		<div class="greeting-wrapper">
+			<p ng-show="name!==''" class="greeting">Hello, <span
+					ng-bind="name"></span>. You are welcome!</p>
+		</div>
+		<p ng-make-short length="textLength">qqq qqq qqq qqq qqq qqq qqq</p>
+		<p data="[1, 2, 3]"></p>
+		<div class="button-wrapper">
+			<button ng-click="decreaseTextLength()" class="button button-half">Decrease length by 1</button>
+			<button ng-click="increaseTextLength()" class="button button-half">Increase length by 1</button>
+		</div>
+		<button ng-click="setNameIvan()" class="button">Change Name to Ivan
+			(show greeting)</button>
+		<button ng-click="setNoName()" class="button">Set name = '' (hide greeting)</button>
+		<button ng-random-color class="button">Change Button Color</button>
+		<div ng-show="name!==''">Well done, {{ name }}!</div>
+	</div>
 </body>
 
 </html>
