@@ -29,6 +29,11 @@
   flex-basis: 48%;
 }
 
+.length-status {
+  margin: 0 auto;
+  margin-bottom: 40px;
+}
+
 .input-field {
   margin: 0 20px;
 }

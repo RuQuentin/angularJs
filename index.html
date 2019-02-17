@@ -9,7 +9,7 @@
 	<script defer src="src/js/index.js"></script>
 </head>
 
-<body ng-app ng-init="name=''">
+<body ng-app ng-init="name='Ivan'">
 	<div class="container">
 		<label class="input-label">Enter your name here
 			<input ng-model="name" class="input-field" />
@@ -19,16 +19,19 @@
 					ng-bind="name"></span>. You are welcome!</p>
 		</div>
 		<p ng-make-short length="textLength">qqq qqq qqq qqq qqq qqq qqq</p>
-		<p data="[1, 2, 3]"></p>
 		<div class="button-wrapper">
-			<button ng-click="decreaseTextLength()" class="button button-half">Decrease length by 1</button>
-			<button ng-click="increaseTextLength()" class="button button-half">Increase length by 1</button>
+			<button ng-click="decreaseTextLength()" class="button button-half">String Length -1</button>
+			<button ng-click="increaseTextLength()" class="button button-half">String Length +1</button>
 		</div>
+		<p class="length-status">Current length is {{ textLength }}</p>
 		<button ng-click="setNameIvan()" class="button">Change Name to Ivan
 			(show greeting)</button>
 		<button ng-click="setNoName()" class="button">Set name = '' (hide greeting)</button>
 		<button ng-random-color class="button">Change Button Color</button>
-		<div ng-show="name!==''">Well done, {{ name }}!</div>
+		<div ng-show="name!==''">Here you can see your name {{ name }} letter-by-letter!</div>
+		<ul>
+			<li ng-repeat="letter in name"></li>
+		</ul>
 	</div>
 </body>
 

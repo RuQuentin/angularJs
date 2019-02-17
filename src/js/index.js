@@ -4,8 +4,13 @@
   const watchers = [];
 
   const rootScope = window;
+
+  // ========= USER PROPERTIES ==========
+
   rootScope.name = '';
   rootScope.textLength = 10;
+
+  // ========= USER FUNCTIONS ==========
 
   rootScope.setNameIvan = () => {
     rootScope.name = 'ivan';
@@ -24,6 +29,8 @@
       rootScope.textLength -= 1;
     }
   };
+
+  // ==================================
 
   rootScope.$watch = (name, watcher) => {
     watchers.push({ name, watcher });
@@ -74,6 +81,9 @@
   };
 
 
+  // ============== DIRECTIVES ================
+
+
   smallAngular.directive('ng-model', function(scope, node, attrs) {
     const data = node.getAttribute('ng-model');
 
@@ -92,8 +102,6 @@
     function updateText() {
       const data = node.getAttribute('ng-bind');
       node.textContent = `${scope[data]}`;
-
-      
     }
 
     updateText();
@@ -173,13 +181,56 @@
     }
 
     ngHide();
-    scope.$watch(node.getAttribute('ng-show'), ngHide);
+    scope.$watch(node.getAttribute('ng-hide'), ngHide);
   });
 
 
-  // smallAngular.node.querySelectorAll('*').forEach(el => {
-  //   const text = el.textContent.match(/{{.+?}}/ig);
-  //   console.log(text)
+  smallAngular.directive('ng-repeat', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-repeat');
+    const dataAsArray = data.split(' in ');
+    scope[dataAsArray[0]] = null;
+
+    const { parentNode } = node;
+    const cleanNode = node.cloneNode(false);
+    cleanNode.removeAttribute('ng-repeat');
+    node.classList.add('ng-hide');
+
+    function ngRepeat() {
+      parentNode.innerHTML = '';
+      parentNode.appendChild(node);
+
+      for (scope[dataAsArray[0]] of scope[dataAsArray[1]]) {
+        const newNode = cleanNode.cloneNode(false);
+        newNode.textContent = scope[dataAsArray[0]];
+        parentNode.appendChild(newNode);
+      }
+    }
+
+    ngRepeat();
+    scope.$watch(node.getAttribute('ng-repeat'), ngRepeat);
+  });
+
+
+  smallAngular.directive('ng-app', function(scope, node, attrs) {
+    // const regExp = /{{.+?}}/ig;
+    // const text = node.innerHTML;
+    // node.innerHTML = `${text.replace(/{{/ig, '${').replace(/}}/ig, '}')}`;
+
+
+    // node.querySelectorAll('*').forEach(el => {
+    //   console.log(el.nodeType)
+    // })
+
+
+    //   if ((/{{.+?}}/ig).test(el.textContent)) {
+    //     const text = el.textContent;
+    //     console.log(text)
+    //     el.textContent = text.replace(/{{.+?}}/ig, '');
+    //   }
+    // });
+  });
+
+
   // })
 
   // function updateText() {
