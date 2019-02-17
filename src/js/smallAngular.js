@@ -10,9 +10,14 @@
   };
 
   rootScope.$apply = () => {
+    let i = 0;
+
     watchers.forEach(({ watcher }) => {
+      i += 1;
       watcher();
     });
+
+    console.log(i);
   };
 
   // ==================================
