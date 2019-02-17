@@ -1,149 +1,226 @@
-/* global Notifications, ListOfFiles, ElementsOnPage, StatusBar, request,
-BlobDataObject, updateStatusBar */
+/* eslint-disable no-eval */
+(function() {
+  const directives = {};
+  const watchers = [];
 
-const uploadForm = document.querySelector('.form__upload');
-const buttonChooseFile = document.querySelector('.button__choose-file');
-const downloadForm = document.querySelector('.form__download');
-const downloadBar = document.querySelector('.textarea__choose');
-const pictureElement = document.querySelector('.picture');
+  const rootScope = window;
 
-const statusMessage = new Notifications([
-  { 'noFileChosen': 'Please, choose the file at first' },
-  { 'noFileEntered': 'Please, enter the name of the file at first' },
-  { 'noFileName': 'There is no file with name `{placeForFileName}`' },
-  { 'fileUpload': 'File `{placeForFileName}` was successfully uploaded to server' },
-  { 'fileSaved': 'File `{placeForFileName}` was saved to your local disc' }
-]);
+  // ========= USER PROPERTIES ==========
 
-const btnChooseFileTitle = new Notifications([
-  { 'default': 'Choose a file...' },
-  { 'fileName': '{placeForFileName}' }
-]);
+  // rootScope.name = '';
+  rootScope.textLength = 10;
 
-const listOfFiles = new ListOfFiles();
+  // ========= USER FUNCTIONS ==========
 
-const statusMessageOnPage = new ElementsOnPage('p', 'status-message', 'status-message-wrapper');
-const listOfFilesOnPage = new ElementsOnPage('li', 'list-of-files__element', 'list-of-files');
-const btnChooseFileTitleOnPage = new ElementsOnPage('span', 'button__file-name', 'button__choose');
-
-
-listOfFiles.update()
-  .then(data => listOfFilesOnPage.update(data));
-
-
-// ============= UPLOAD FORM =================
-
-buttonChooseFile.onchange = function() {
-  statusMessageOnPage.deleteAll();
-  const fileNameToUpload = this.value.split('fakepath\\')[1];
-
-  if (fileNameToUpload) {
-    const btnText = btnChooseFileTitle.fileName.getMessage(fileNameToUpload);
-    btnChooseFileTitleOnPage.update(btnText);
-  }
-};
-
-uploadForm.onsubmit = function(e) {
-  e.preventDefault();
-
-  statusMessageOnPage.deleteAll();
-
-  const uploadFile = e.target.sampleFile.files[0];
-
-  if (!uploadFile) {
-    const { message: msgText } = statusMessage.noFileChosen;
-    statusMessageOnPage.update(msgText);
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append('sampleFile', uploadFile);
-
-  const uploadStatusBar = new StatusBar({
-    tagName: 'div',
-    className: `status-bar__upload file__${uploadFile.name}`,
-    parrentElClassName: 'status-bar__upload-wrapper',
-    statusFunction: updateStatusBar
-  });
-
-  const config = {
-    data: formData,
-    onUploadProgress: uploadStatusBar.showProgress.bind(uploadStatusBar)
+  rootScope.setNameIvan = () => {
+    rootScope.name = 'ivan';
   };
 
-  request
-    .post('/upload', config)
-    .then(() => {
-      const { message: btnText } = btnChooseFileTitle.default;
-      btnChooseFileTitleOnPage.update(btnText);
+  rootScope.setNoName = () => {
+    rootScope.name = '';
+  };
 
-      const msgText = statusMessage.fileUpload.getMessage(uploadFile.name);
-      statusMessageOnPage.update(msgText);
+  rootScope.increaseTextLength = () => {
+    rootScope.textLength += 5;
+  };
 
-      listOfFiles.update()
-        .then(data => listOfFilesOnPage.update(data));
+  rootScope.decreaseTextLength = () => {
+    if (rootScope.textLength > 0) {
+      rootScope.textLength -= 5;
+    }
+  };
 
-      uploadForm.reset();
-      setTimeout(() => uploadStatusBar.delete(), 500);
+  // ==================================
+
+  rootScope.$watch = (name, watcher) => {
+    watchers.push({ name, watcher });
+  };
+
+  rootScope.$apply = () => {
+    watchers.forEach(({ watcher }) => {
+      watcher();
     });
-};
-
-
-// ============= DOWNLOAD FORM =================
-
-downloadForm.onsubmit = function(e) {
-  e.preventDefault();
-
-  statusMessageOnPage.deleteAll();
-
-  const downloadFileName = e.target.sampleFile.value;
-
-  if (!downloadFileName) {
-    const { message: msgText } = statusMessage.noFileChosen;
-    statusMessageOnPage.update(msgText);
-    return;
-  }
-
-  if (!listOfFiles.hasItem(downloadFileName)) {
-    const msgText = statusMessage.noFileName.getMessage(downloadFileName);
-    statusMessageOnPage.update(msgText);
-    return;
-  }
-
-  const downloadStatusBar = new StatusBar({
-    tagName: 'div',
-    className: `status-bar__download file__${downloadFileName}`,
-    parrentElClassName: 'textarea__choose-wrapper',
-    statusFunction: updateStatusBar
-  });
-
-  const config = {
-    responseType: 'blob',
-    transformResponse: [data => data.response],
-    onDownloadProgress: downloadStatusBar.showProgress.bind(downloadStatusBar)
   };
 
-  request
-    .get(`/files/${downloadFileName}`, config)
-    .then(response => {
-      const blob = new BlobDataObject(response);
-
-      statusMessageOnPage.deleteAll();
-
-      if (blob.isPicture()) {
-        blob.display(pictureElement);
+  const smallAngular = {
+    directive(name, fn) {
+      if (!directives[name]) {
+        directives[name] = [];
       }
 
-      if (!blob.isPicture()) {
-        blob.download(downloadFileName);
-        const msgText = statusMessage.fileSaved.getMessage(downloadFileName);
-        statusMessageOnPage.update(msgText);
-      }
+      directives[name].push(fn);
+    },
 
-      setTimeout(() => {
-        downloadStatusBar.delete();
-        downloadForm.reset();
-      }, 500);
-    })
-    .catch(error => window.console.log(error));
-};
+    compile(node) {
+      const attrsNg = [];
+      const attrsRest = {};
+
+      node.getAttributeNames().forEach(attr => {
+        if ((/^ng-.+/ig).test(attr)) {
+          attrsNg.push(attr);
+        } else {
+          attrsRest[attr] = node.getAttribute(attr);
+        }
+      });
+
+      attrsNg.forEach(attr => {
+        if (directives[attr]) {
+          directives[attr].forEach(cb => cb(rootScope, node, attrsRest));
+        }
+      });
+    },
+
+    bootstrap(node) {
+      this.node = node || document.querySelector('[ng-app]');
+
+      this.compile(this.node);
+      this.node.querySelectorAll('*').forEach(el => {
+        this.compile(el);
+      });
+    }
+  };
+
+
+  // ============== DIRECTIVES ================
+
+
+  smallAngular.directive('ng-model', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-model');
+
+    function updateVariableValue() {
+      scope[data] = node.value;
+      scope.$apply();
+    }
+
+    node.addEventListener('keyup', () => {
+      node.onchange = updateVariableValue();
+    });
+  });
+
+
+  smallAngular.directive('ng-bind', function(scope, node, attrs) {
+    function updateText() {
+      const data = node.getAttribute('ng-bind');
+      node.textContent = `${scope[data]}`;
+    }
+
+    updateText();
+    scope.$watch(node.getAttribute('ng-bind'), updateText);
+  });
+
+
+  smallAngular.directive('ng-make-short', function(scope, node, attrs) {
+    const { textContent } = node;
+
+    function ngMakeShort() {
+      const length = eval(attrs.length);
+      node.textContent = textContent.slice(0, length).concat('...');
+
+      if (length > textContent.length - 3) {
+        node.textContent = textContent;
+      }
+    }
+
+    ngMakeShort();
+    scope.$watch(node.getAttribute('ng-make-short'), ngMakeShort);
+  });
+
+
+  smallAngular.directive('ng-init', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-init');
+    eval(data);
+  });
+
+
+  smallAngular.directive('ng-click', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-click');
+
+    node.addEventListener('click', () => {
+      eval(data);
+      scope.$apply();
+    });
+  });
+
+
+  smallAngular.directive('ng-random-color', function(scope, node, attrs) {
+    function setRandomColor() {
+      node.style.backgroundColor = `#${Math.floor(Math.random() * 16581375).toString(16)}`;
+    }
+
+    node.addEventListener('click', setRandomColor);
+  });
+
+
+  smallAngular.directive('ng-show', function(scope, node, attrs) {
+    function ngShow() {
+      const data = node.getAttribute('ng-show');
+      const result = eval(data);
+      const hasToBeShown = result && node.classList.contains('ng-hide');
+      const hasToBeHidden = !result && !node.classList.contains('ng-hide');
+
+      if (hasToBeShown || hasToBeHidden) {
+        node.classList.toggle('ng-hide');
+      }
+    }
+
+    ngShow();
+    scope.$watch(node.getAttribute('ng-show'), ngShow);
+  });
+
+
+  smallAngular.directive('ng-hide', function(scope, node, attrs) {
+    function ngHide(node) {
+      const data = node.getAttribute('ng-hide');
+      const result = eval(data);
+      const hasToBeHidden = result && !node.classList.contains('ng-hide');
+      const hasToBeShown = !result && node.classList.contains('ng-hide');
+
+      if (hasToBeHidden || hasToBeShown) {
+        node.classList.add('ng-hide');
+      }
+    }
+
+    ngHide();
+    scope.$watch(node.getAttribute('ng-hide'), ngHide);
+  });
+
+
+  smallAngular.directive('ng-repeat', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-repeat');
+    const dataAsArray = data.split(' in ');
+    scope[dataAsArray[0]] = null;
+
+    const { parentNode } = node;
+    const cleanNode = node.cloneNode(false);
+    cleanNode.removeAttribute('ng-repeat');
+    node.classList.add('ng-hide');
+
+    function ngRepeat() {
+      parentNode.innerHTML = '';
+      parentNode.appendChild(node);
+
+      for (scope[dataAsArray[0]] of scope[dataAsArray[1]]) {
+        const newNode = cleanNode.cloneNode(false);
+        newNode.textContent = scope[dataAsArray[0]];
+        parentNode.appendChild(newNode);
+      }
+    }
+
+    ngRepeat();
+    scope.$watch(node.getAttribute('ng-repeat'), ngRepeat);
+  });
+
+
+  smallAngular.directive('ng-app', function(scope, node, attrs) {
+    node.innerHTML = node.innerHTML.replace(/{{.+?}}/ig, el => {
+      const variable = el.match(/\b.+\b/);
+
+      return `<span ng-bind="${variable}"></span>`;
+    });
+  });
+
+  window.smallAngular = smallAngular;
+}());
+
+// eslint-disable-next-line no-undef
+smallAngular.bootstrap();
