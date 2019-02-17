@@ -7,7 +7,7 @@
 
   // ========= USER PROPERTIES ==========
 
-  rootScope.name = '';
+  // rootScope.name = '';
   rootScope.textLength = 10;
 
   // ========= USER FUNCTIONS ==========
@@ -21,12 +21,12 @@
   };
 
   rootScope.increaseTextLength = () => {
-    rootScope.textLength += 1;
+    rootScope.textLength += 5;
   };
 
   rootScope.decreaseTextLength = () => {
     if (rootScope.textLength > 0) {
-      rootScope.textLength -= 1;
+      rootScope.textLength -= 5;
     }
   };
 
@@ -212,38 +212,12 @@
 
 
   smallAngular.directive('ng-app', function(scope, node, attrs) {
-    // const regExp = /{{.+?}}/ig;
-    // const text = node.innerHTML;
-    // node.innerHTML = `${text.replace(/{{/ig, '${').replace(/}}/ig, '}')}`;
+    node.innerHTML = node.innerHTML.replace(/{{.+?}}/ig, el => {
+      const variable = el.match(/\b.+\b/);
 
-
-    // node.querySelectorAll('*').forEach(el => {
-    //   console.log(el.nodeType)
-    // })
-
-
-    //   if ((/{{.+?}}/ig).test(el.textContent)) {
-    //     const text = el.textContent;
-    //     console.log(text)
-    //     el.textContent = text.replace(/{{.+?}}/ig, '');
-    //   }
-    // });
+      return `<span ng-bind="${variable}"></span>`;
+    });
   });
-
-
-  // })
-
-  // function updateText() {
-  //   const variable = eval(data);
-  //   const find = text.replace(/{{.+?}}/ig, `${variable}`);
-  //   node.textContent = find;
-  // }
-
-  // updateText();
-  // scope.$watch(node.getAttribute('ng-bind'), updateText);
-
-
-  // })
 
   window.smallAngular = smallAngular;
 }());

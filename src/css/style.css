@@ -11,6 +11,15 @@
   margin-bottom: 20px;
 }
 
+.text-length-wrapper {
+  background-color: palevioletred;
+  width: 80%;
+  display: flex;
+  flex-flow: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .button-wrapper {
   display: flex;
   justify-content: space-between;
@@ -32,6 +41,7 @@
 .length-status {
   margin: 0 auto;
   margin-bottom: 40px;
+  color: white;
 }
 
 .input-field {
