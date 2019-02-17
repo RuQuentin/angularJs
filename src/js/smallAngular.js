@@ -7,28 +7,27 @@
 
   // ========= USER PROPERTIES ==========
 
-  // rootScope.name = '';
-  rootScope.textLength = 10;
+  // rootScope.textLength = 10;
 
   // ========= USER FUNCTIONS ==========
 
-  rootScope.setNameIvan = () => {
-    rootScope.name = 'ivan';
-  };
+  // rootScope.setNameIvan = () => {
+  //   rootScope.name = 'ivan';
+  // };
 
-  rootScope.setNoName = () => {
-    rootScope.name = '';
-  };
+  // rootScope.setNameToEmpty = () => {
+  //   rootScope.name = '';
+  // };
 
-  rootScope.increaseTextLength = () => {
-    rootScope.textLength += 5;
-  };
+  // rootScope.increaseTextLength = () => {
+  //   rootScope.textLength += 5;
+  // };
 
-  rootScope.decreaseTextLength = () => {
-    if (rootScope.textLength > 0) {
-      rootScope.textLength -= 5;
-    }
-  };
+  // rootScope.decreaseTextLength = () => {
+  //   if (rootScope.textLength > 0) {
+  //     rootScope.textLength -= 5;
+  //   }
+  // };
 
   // ==================================
 
@@ -51,6 +50,7 @@
       directives[name].push(fn);
     },
 
+
     compile(node) {
       const attrsNg = [];
       const attrsRest = {};
@@ -70,6 +70,7 @@
       });
     },
 
+
     bootstrap(node) {
       this.node = node || document.querySelector('[ng-app]');
 
@@ -77,37 +78,63 @@
       this.node.querySelectorAll('*').forEach(el => {
         this.compile(el);
       });
+    },
+
+
+    addUserFunction(fn) {
+      if (typeof fn !== 'function') {
+        throw new Error(`${fn} is not a function`)
+      }
+
+      rootScope[fn] = fn.bind('rootScope');
     }
   };
 
 
   // ============== DIRECTIVES ================
 
+  // ========== ng-app ===========
+
+  smallAngular.directive('ng-app', function(scope, node, attrs) {
+    node.innerHTML = node.innerHTML.replace(/{{.+?}}/ig, el => {
+      const variable = el.match(/\b.+\b/);
+
+      return `<span ng-bind="${variable}"></span>`;
+    });
+  });
+
+  // ========== ng-init ===========
+
+  smallAngular.directive('ng-init', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-init');
+    eval(data);
+  });
+
+  // ========== ng-model ===========
 
   smallAngular.directive('ng-model', function(scope, node, attrs) {
     const data = node.getAttribute('ng-model');
 
-    function updateVariableValue() {
+    node.addEventListener('keyup', () => {
       scope[data] = node.value;
       scope.$apply();
-    }
-
-    node.addEventListener('keyup', () => {
-      node.onchange = updateVariableValue();
     });
   });
 
+  // ========== ng-bind ===========
 
   smallAngular.directive('ng-bind', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-bind');
+
     function updateText() {
-      const data = node.getAttribute('ng-bind');
-      node.textContent = `${scope[data]}`;
+      node.textContent = scope[data];
     }
 
     updateText();
-    scope.$watch(node.getAttribute('ng-bind'), updateText);
+    scope.$watch(() => scope[data], updateText);
   });
 
+  // ========== ng-make-short ===========
 
   smallAngular.directive('ng-make-short', function(scope, node, attrs) {
     const { textContent } = node;
@@ -122,15 +149,10 @@
     }
 
     ngMakeShort();
-    scope.$watch(node.getAttribute('ng-make-short'), ngMakeShort);
+    scope.$watch(() => eval(attrs.length), ngMakeShort);
   });
 
-
-  smallAngular.directive('ng-init', function(scope, node, attrs) {
-    const data = node.getAttribute('ng-init');
-    eval(data);
-  });
-
+  // ========== ng-click ===========
 
   smallAngular.directive('ng-click', function(scope, node, attrs) {
     const data = node.getAttribute('ng-click');
@@ -141,19 +163,20 @@
     });
   });
 
+  // ========== ng-random-color ===========
 
   smallAngular.directive('ng-random-color', function(scope, node, attrs) {
-    function setRandomColor() {
+    node.addEventListener('click', () => {
       node.style.backgroundColor = `#${Math.floor(Math.random() * 16581375).toString(16)}`;
-    }
-
-    node.addEventListener('click', setRandomColor);
+    });
   });
 
+  // ========== ng-show ===========
 
   smallAngular.directive('ng-show', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-show');
+
     function ngShow() {
-      const data = node.getAttribute('ng-show');
       const result = eval(data);
       const hasToBeShown = result && node.classList.contains('ng-hide');
       const hasToBeHidden = !result && !node.classList.contains('ng-hide');
@@ -164,13 +187,15 @@
     }
 
     ngShow();
-    scope.$watch(node.getAttribute('ng-show'), ngShow);
+    scope.$watch(() => eval(data), ngShow);
   });
 
+  // ========== ng-hide ===========
 
   smallAngular.directive('ng-hide', function(scope, node, attrs) {
+    const data = node.getAttribute('ng-hide');
+
     function ngHide(node) {
-      const data = node.getAttribute('ng-hide');
       const result = eval(data);
       const hasToBeHidden = result && !node.classList.contains('ng-hide');
       const hasToBeShown = !result && node.classList.contains('ng-hide');
@@ -181,9 +206,10 @@
     }
 
     ngHide();
-    scope.$watch(node.getAttribute('ng-hide'), ngHide);
+    scope.$watch(() => eval(data), ngHide);
   });
 
+  // ========== ng-repeat ===========
 
   smallAngular.directive('ng-repeat', function(scope, node, attrs) {
     const data = node.getAttribute('ng-repeat');
@@ -191,32 +217,22 @@
     scope[dataAsArray[0]] = null;
 
     const { parentNode } = node;
-    const cleanNode = node.cloneNode(false);
-    cleanNode.removeAttribute('ng-repeat');
+    const cleanClone = node.cloneNode(false);
+    cleanClone.removeAttribute('ng-repeat');
     node.classList.add('ng-hide');
 
     function ngRepeat() {
       parentNode.innerHTML = '';
-      parentNode.appendChild(node);
 
       for (scope[dataAsArray[0]] of scope[dataAsArray[1]]) {
-        const newNode = cleanNode.cloneNode(false);
+        const newNode = cleanClone.cloneNode(false);
         newNode.textContent = scope[dataAsArray[0]];
         parentNode.appendChild(newNode);
       }
     }
 
     ngRepeat();
-    scope.$watch(node.getAttribute('ng-repeat'), ngRepeat);
-  });
-
-
-  smallAngular.directive('ng-app', function(scope, node, attrs) {
-    node.innerHTML = node.innerHTML.replace(/{{.+?}}/ig, el => {
-      const variable = el.match(/\b.+\b/);
-
-      return `<span ng-bind="${variable}"></span>`;
-    });
+    scope.$watch(() => scope[dataAsArray[1]], ngRepeat);
   });
 
   window.smallAngular = smallAngular;

@@ -5,31 +5,33 @@
   flex-flow: column;
   align-items: center;
   padding-top: 30px;
+  text-align: center;
 }
 
 .input-label {
   margin-bottom: 20px;
 }
 
-.text-length-wrapper {
+.colored-wrapper {
   background-color: palevioletred;
-  width: 80%;
+  width: 100%;
   display: flex;
   flex-flow: column;
   align-items: center;
+  padding: 10px;
   margin-bottom: 20px;
 }
 
 .button-wrapper {
   display: flex;
   justify-content: space-between;
-  width: 300px;
+  width: 250px;
 }
 
 .button {
   display: block;
   margin-bottom: 20px;
-  width: 300px;
+  width: 250px;
   height: 50px;
   text-align: center;
 }
@@ -40,7 +42,6 @@
 
 .length-status {
   margin: 0 auto;
-  margin-bottom: 40px;
   color: white;
 }
 
@@ -49,7 +50,8 @@
 }
 
 .greeting-wrapper {
-  height: 50px;
+  min-height: 50px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
