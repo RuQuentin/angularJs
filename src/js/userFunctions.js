@@ -1,7 +1,5 @@
 /* global smallAngular */
 
-// ========= USER FUNCTIONS ==========
-
 function setNameIvan() {
   this.name = 'ivan';
 }
@@ -18,7 +16,7 @@ function decreaseTextLength() {
   if (this.textLength > 0) {
     this.textLength -= 5;
   }
-};
+}
 
 // ====================================
 
