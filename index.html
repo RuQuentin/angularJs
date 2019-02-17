@@ -18,17 +18,24 @@
 			<p ng-show="name!==''" class="greeting">Hello, <span
 					ng-bind="name"></span>. You are welcome!</p>
 		</div>
-		<p ng-make-short length="textLength">qqq qqq qqq qqq qqq qqq qqq</p>
-		<div class="button-wrapper">
-			<button ng-click="decreaseTextLength()" class="button button-half">String Length -1</button>
-			<button ng-click="increaseTextLength()" class="button button-half">String Length +1</button>
+		<div class="text-length-wrapper">
+			<p ng-make-short length="textLength">Here is the text, that you can make
+				as short as you want</p>
+			<div class="button-wrapper">
+				<button ng-click="decreaseTextLength()"
+					class="button button-half">String Length -5</button>
+				<button ng-click="increaseTextLength()"
+					class="button button-half">String Length +5</button>
+			</div>
+			<p class="length-status">Current length is {{ textLength }}</p>
 		</div>
-		<p class="length-status">Current length is {{ textLength }}</p>
 		<button ng-click="setNameIvan()" class="button">Change Name to Ivan
 			(show greeting)</button>
-		<button ng-click="setNoName()" class="button">Set name = '' (hide greeting)</button>
+		<button ng-click="setNoName()" class="button">Set name = '' (hide
+			greeting)</button>
 		<button ng-random-color class="button">Change Button Color</button>
-		<div ng-show="name!==''">Here you can see your name {{ name }} letter-by-letter!</div>
+		<div ng-show="name!==''">Here you can see your name {{ name }}
+			letter-by-letter!</div>
 		<ul>
 			<li ng-repeat="letter in name"></li>
 		</ul>
