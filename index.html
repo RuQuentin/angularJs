@@ -3,22 +3,26 @@
 
 <head>
 	<title>angularJS</title>
-	<!-- <link rel="stylesheet" href="src/css/reset.css"> -->
+	<link rel="stylesheet" href="src/css/reset.css">
 	<link rel="stylesheet" href="src/css/style.css">
 	<link rel="stylesheet" href="src/css/ng-styles.css">
-	<script defer src="src/js/index.js"></script>
+	<script defer src="src/js/smallAngular.js"></script>
+	<script defer src="src/js/userFunctions.js"></script>
 </head>
 
-<body ng-app ng-init="name='Ivan'">
+<body ng-app ng-init="name='Ivan'; textLength=10">
 	<div class="container">
+
 		<label class="input-label">Enter your name here
-			<input ng-model="name" class="input-field" />
+			<input ng-model="name" class="input-field" value="Kir" />
 		</label>
+
 		<div class="greeting-wrapper">
 			<p ng-show="name!==''" class="greeting">Hello, <span
 					ng-bind="name"></span>. You are welcome!</p>
 		</div>
-		<div class="text-length-wrapper">
+
+		<div class="colored-wrapper">
 			<p ng-make-short length="textLength">Here is the text, that you can make
 				as short as you want</p>
 			<div class="button-wrapper">
@@ -29,16 +33,21 @@
 			</div>
 			<p class="length-status">Current length is {{ textLength }}</p>
 		</div>
-		<button ng-click="setNameIvan()" class="button">Change Name to Ivan
+
+		<button ng-click="setNameIvan()" class="button">Change Name to 'Ivan'
 			(show greeting)</button>
-		<button ng-click="setNoName()" class="button">Set name = '' (hide
+		<button ng-click="setNameToEmpty()" class="button">Set name = '' (hide
 			greeting)</button>
-		<button ng-random-color class="button">Change Button Color</button>
-		<div ng-show="name!==''">Here you can see your name {{ name }}
-			letter-by-letter!</div>
-		<ul>
-			<li ng-repeat="letter in name"></li>
-		</ul>
+		<button ng-random-color class="button">Press to Change Button Color</button>
+
+		<div class="colored-wrapper">
+			<div ng-show="name!==''">Here you can see your name {{ name }}
+				letter-by-letter!</div>
+			<ul>
+				<li ng-repeat="letter in name"></li>
+			</ul>
+		</div>
+
 	</div>
 </body>
 
