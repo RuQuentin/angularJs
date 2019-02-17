@@ -131,7 +131,7 @@
     }
 
     updateText();
-    scope.$watch(node.getAttribute('ng-bind'), updateText);
+    scope.$watch(() => scope[data], updateText);
   });
 
   // ========== ng-make-short ===========
@@ -149,7 +149,7 @@
     }
 
     ngMakeShort();
-    scope.$watch(node.getAttribute('ng-make-short'), ngMakeShort);
+    scope.$watch(() => eval(attrs.length), ngMakeShort);
   });
 
   // ========== ng-click ===========
@@ -187,7 +187,7 @@
     }
 
     ngShow();
-    scope.$watch(node.getAttribute('ng-show'), ngShow);
+    scope.$watch(() => eval(data), ngShow);
   });
 
   // ========== ng-hide ===========
@@ -206,7 +206,7 @@
     }
 
     ngHide();
-    scope.$watch(node.getAttribute('ng-hide'), ngHide);
+    scope.$watch(() => eval(data), ngHide);
   });
 
   // ========== ng-repeat ===========
@@ -232,7 +232,7 @@
     }
 
     ngRepeat();
-    scope.$watch(node.getAttribute('ng-repeat'), ngRepeat);
+    scope.$watch(() => scope[dataAsArray[1]], ngRepeat);
   });
 
   window.smallAngular = smallAngular;
