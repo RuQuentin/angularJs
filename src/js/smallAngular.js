@@ -6,18 +6,11 @@
   const rootScope = window;
 
   rootScope.$watch = (valueChecker, previousValue, watcher) => {
-    watchers.push({ valueChecker, previousValue, watcher });
+    watchers.push({ name, watcher });
   };
 
   rootScope.$apply = () => {
-    watchers.forEach(obj => {
-      const currentValue = obj.valueChecker();
-
-      if (currentValue !== obj.previousValue) {
-        obj.previousValue = currentValue;
-        obj.watcher();
-      }
-    });
+    watchers.forEach(obj => obj.watcher());
   };
 
   // ==================================
@@ -109,7 +102,7 @@
       scope.$apply();
     });
 
-    scope.$watch(getCurrentValue, getCurrentValue(), updateValue);
+    scope.$watch(getCurrentValue, updateValue);
   });
 
   // ========== ng-bind ===========
@@ -126,7 +119,7 @@
     }
 
     updateText();
-    scope.$watch(getCurrentValue, getCurrentValue(), updateText);
+    scope.$watch(getCurrentValue, updateText);
   });
 
   // ========== ng-make-short ===========
@@ -148,7 +141,7 @@
     }
 
     ngMakeShort();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngMakeShort);
+    scope.$watch(getCurrentValue, ngMakeShort);
   });
 
   // ========== ng-click ===========
@@ -190,7 +183,7 @@
     }
 
     ngShow();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngShow);
+    scope.$watch(getCurrentValue, ngShow);
   });
 
   // ========== ng-hide ===========
@@ -213,7 +206,7 @@
     }
 
     ngHide();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngHide);
+    scope.$watch(getCurrentValue, ngHide);
   });
 
   // ========== ng-repeat ===========
@@ -243,7 +236,7 @@
     }
 
     ngRepeat();
-    scope.$watch(getCurrentValue, scope[dataAsArray[1]], ngRepeat);
+    scope.$watch(getCurrentValue, ngRepeat);
   });
 
   window.smallAngular = smallAngular;
