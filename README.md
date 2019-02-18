@@ -1,7 +1,47 @@
-Реализовать модуль в котором будет экспортиться объект со следующими методами:
+small AngularJS implementation
+=====================
 
-directive - принимает имя и функцию и регистрирует (пушит себе в массив директивы)
+General Project Information
+-----------------------------------
+This small implementation of AngularJS may be used the same way as original AngularJS.
+You can use it to extend the functionality of your html document without using JavaScript.
+This project includes:
 
-compile - принимает дом-узел, проверяет, есть ли на нем зарегистрированные директивы, и применяет все по очереди
 
-bootstrap - при вызове этого метода мы инициализируем старт нашего приложения - цепляясь либо к ноде что передали, либо к ноде с атрибутом ng-app после чего вызываем compile для всех дом узлов внутри этой ноды
+**basic methods**:
+* directive
+* compile
+* bindCurlyBracedVariables
+* bootstrap
+* addUserFunction
+
+
+**directives**
+* ng-init
+* ng-model
+* ng-mind
+* ng-make-short
+* ng-click
+* ng-random-color
+* ng-show
+* ng-hide
+* ng-repeat
+
+
+**scope methods**
+* $watch
+* $apply
+
+
+Usage
+-----------------------------------
+To use **small AngularJS** on your page add it to you page using the following link:
+
+https://github.com/RuQuentin/angularJs/blob/master/src/js/smallAngular.js
+
+or download this script and add it locally.
+
+
+For more details, please, visit WIKI page:
+
+https://github.com/RuQuentin/angularJs/wiki
