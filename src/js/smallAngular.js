@@ -5,7 +5,7 @@
   const watchers = [];
   const rootScope = window;
 
-  rootScope.$watch = (valueChecker, previousValue, watcher) => {
+  rootScope.$watch = (name, watcher) => {
     watchers.push({ name, watcher });
   };
 
@@ -54,23 +54,38 @@
     },
 
 
+    addUserFunction(fn) {
+      if (typeof fn !== 'function') {
+        throw new Error(`${fn} is not a function`);
+      }
+
+      rootScope[fn] = fn.bind('rootScope');
+    },
+
+
+    addNgStyles() {
+      const styles = `
+      <style type="text/css">
+      .ng-hide {
+        display: none !important;
+      }
+      </style>
+      `;
+
+      const head = document.querySelector('head');
+      head.innerHTML = styles + head.innerHTML;
+    },
+
+
     bootstrap(node) {
       this.node = node || document.querySelector('[ng-app]');
 
+      this.addNgStyles();
       this.bindCurlyBracedVariables(this.node);
       this.compile(this.node);
       this.node.querySelectorAll('*').forEach(el => {
         this.compile(el);
       });
-    },
-
-
-    addUserFunction(fn) {
-      if (typeof fn !== 'function') {
-        throw new Error(`${fn} is not a function`)
-      }
-
-      rootScope[fn] = fn.bind('rootScope');
     }
   };
 
