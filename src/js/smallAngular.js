@@ -23,7 +23,7 @@
   // ==================================
 
   const smallAngular = {
-    directive(name, fn) {
+    directive(name, fn, attrs) {
       if (!directives[name]) {
         directives[name] = [];
       }
@@ -208,7 +208,7 @@
       const hasToBeShown = !result && node.classList.contains('ng-hide');
 
       if (hasToBeHidden || hasToBeShown) {
-        node.classList.add('ng-hide');
+        node.classList.toggle('ng-hide');
       }
     }
 
