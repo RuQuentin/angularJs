@@ -12,6 +12,7 @@ This project includes:
 * directive
 * compile
 * bindCurlyBracedVariables
+* addNgStyles
 * bootstrap
 * addUserFunction
 
