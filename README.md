@@ -19,7 +19,7 @@ This project includes:
 **directives**
 * ng-init
 * ng-model
-* ng-mind
+* ng-bind
 * ng-make-short
 * ng-click
 * ng-random-color
