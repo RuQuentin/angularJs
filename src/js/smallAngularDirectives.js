@@ -34,12 +34,16 @@ smallAngular.directive('ng-model', function(scope, node, attrs) {
 smallAngular.directive('ng-bind', function(scope, node, attrs) {
   const data = node.getAttribute('ng-bind');
 
+  function getCurrentValue() {
+    return scope[data];
+  }
+
   function updateText() {
-    node.textContent = scope[data];
+    node.textContent = getCurrentValue();
   }
 
   updateText();
-  scope.$watch(() => scope[data], updateText);
+  scope.$watch(getCurrentValue, getCurrentValue(), updateText);
 });
 
 // ========== ng-make-short ===========
@@ -47,8 +51,12 @@ smallAngular.directive('ng-bind', function(scope, node, attrs) {
 smallAngular.directive('ng-make-short', function(scope, node, attrs) {
   const { textContent } = node;
 
+  function getCurrentValue() {
+    return eval(attrs.length);
+  }
+
   function ngMakeShort() {
-    const length = eval(attrs.length);
+    const length = getCurrentValue();
     node.textContent = textContent.slice(0, length).concat('...');
 
     if (length > textContent.length - 3) {
@@ -57,7 +65,7 @@ smallAngular.directive('ng-make-short', function(scope, node, attrs) {
   }
 
   ngMakeShort();
-  scope.$watch(() => eval(attrs.length), ngMakeShort);
+  scope.$watch(getCurrentValue, getCurrentValue(), ngMakeShort);
 });
 
 // ========== ng-click ===========
@@ -84,8 +92,12 @@ smallAngular.directive('ng-random-color', function(scope, node, attrs) {
 smallAngular.directive('ng-show', function(scope, node, attrs) {
   const data = node.getAttribute('ng-show');
 
+  function getCurrentValue() {
+    return eval(data);
+  }
+
   function ngShow() {
-    const result = eval(data);
+    const result = getCurrentValue();
     const hasToBeShown = result && node.classList.contains('ng-hide');
     const hasToBeHidden = !result && !node.classList.contains('ng-hide');
 
@@ -95,7 +107,7 @@ smallAngular.directive('ng-show', function(scope, node, attrs) {
   }
 
   ngShow();
-  scope.$watch(() => eval(data), ngShow);
+  scope.$watch(getCurrentValue, getCurrentValue(), ngShow);
 });
 
 // ========== ng-hide ===========
@@ -103,8 +115,12 @@ smallAngular.directive('ng-show', function(scope, node, attrs) {
 smallAngular.directive('ng-hide', function(scope, node, attrs) {
   const data = node.getAttribute('ng-hide');
 
+  function getCurrentValue() {
+    return eval(data);
+  }
+
   function ngHide(node) {
-    const result = eval(data);
+    const result = getCurrentValue();
     const hasToBeHidden = result && !node.classList.contains('ng-hide');
     const hasToBeShown = !result && node.classList.contains('ng-hide');
 
@@ -114,7 +130,7 @@ smallAngular.directive('ng-hide', function(scope, node, attrs) {
   }
 
   ngHide();
-  scope.$watch(() => eval(data), ngHide);
+  scope.$watch(getCurrentValue, getCurrentValue(), ngHide);
 });
 
 // ========== ng-repeat ===========
@@ -129,6 +145,10 @@ smallAngular.directive('ng-repeat', function(scope, node, attrs) {
   cleanClone.removeAttribute('ng-repeat');
   node.classList.add('ng-hide');
 
+  function getCurrentValue() {
+    return scope[dataAsArray[1]];
+  }
+
   function ngRepeat() {
     parentNode.innerHTML = '';
 
@@ -140,7 +160,7 @@ smallAngular.directive('ng-repeat', function(scope, node, attrs) {
   }
 
   ngRepeat();
-  scope.$watch(() => scope[dataAsArray[1]], ngRepeat);
+  scope.$watch(getCurrentValue, scope[dataAsArray[1]], ngRepeat);
 });
 
 // eslint-disable-next-line no-undef

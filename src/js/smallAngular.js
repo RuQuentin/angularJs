@@ -5,13 +5,18 @@
   const watchers = [];
   const rootScope = window;
 
-  rootScope.$watch = (name, watcher) => {
-    watchers.push({ name, watcher });
+  rootScope.$watch = (valueChecker, previousValue, watcher) => {
+    watchers.push({ valueChecker, previousValue, watcher });
   };
 
   rootScope.$apply = () => {
-    watchers.forEach(({ watcher }) => {
-      watcher();
+    watchers.forEach(obj => {
+      const currentValue = obj.valueChecker();
+
+      if (currentValue !== obj.previousValue) {
+        obj.previousValue = currentValue;
+        obj.watcher();
+      }
     });
   };
 
