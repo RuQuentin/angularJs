@@ -93,6 +93,7 @@ function userFunction() {
 You may use context `this` inside the function for declaring variables or access to another variables from the rootScope. After adding function `this` will be replaced with `rootScope`.
 
 2. Add function to the rootScope.
+
 ```js
 smallAngular.addUserFunction(userFunction)
 ```
