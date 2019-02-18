@@ -8,8 +8,13 @@
   text-align: center;
 }
 
+.input-wrapper {
+  text-align: right;
+}
+
 .input-label {
   margin-bottom: 20px;
+  display: block;
 }
 
 .colored-wrapper {
