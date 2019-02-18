@@ -5,19 +5,12 @@
   const watchers = [];
   const rootScope = window;
 
-  rootScope.$watch = (valueChecker, previousValue, watcher) => {
-    watchers.push({ valueChecker, previousValue, watcher });
+  rootScope.$watch = (name, watcher) => {
+    watchers.push({ name, watcher });
   };
 
   rootScope.$apply = () => {
-    watchers.forEach(obj => {
-      const currentValue = obj.valueChecker();
-
-      if (currentValue !== obj.previousValue) {
-        obj.previousValue = currentValue;
-        obj.watcher();
-      }
-    });
+    watchers.forEach(obj => obj.watcher());
   };
 
   // ==================================
@@ -61,23 +54,38 @@
     },
 
 
+    addUserFunction(fn) {
+      if (typeof fn !== 'function') {
+        throw new Error(`${fn} is not a function`);
+      }
+
+      rootScope[fn] = fn.bind('rootScope');
+    },
+
+
+    addNgStyles() {
+      const styles = `
+      <style type="text/css">
+      .ng-hide {
+        display: none !important;
+      }
+      </style>
+      `;
+
+      const head = document.querySelector('head');
+      head.innerHTML = styles + head.innerHTML;
+    },
+
+
     bootstrap(node) {
       this.node = node || document.querySelector('[ng-app]');
 
+      this.addNgStyles();
       this.bindCurlyBracedVariables(this.node);
       this.compile(this.node);
       this.node.querySelectorAll('*').forEach(el => {
         this.compile(el);
       });
-    },
-
-
-    addUserFunction(fn) {
-      if (typeof fn !== 'function') {
-        throw new Error(`${fn} is not a function`)
-      }
-
-      rootScope[fn] = fn.bind('rootScope');
     }
   };
 
@@ -109,7 +117,7 @@
       scope.$apply();
     });
 
-    scope.$watch(getCurrentValue, getCurrentValue(), updateValue);
+    scope.$watch(getCurrentValue, updateValue);
   });
 
   // ========== ng-bind ===========
@@ -126,7 +134,7 @@
     }
 
     updateText();
-    scope.$watch(getCurrentValue, getCurrentValue(), updateText);
+    scope.$watch(getCurrentValue, updateText);
   });
 
   // ========== ng-make-short ===========
@@ -148,7 +156,7 @@
     }
 
     ngMakeShort();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngMakeShort);
+    scope.$watch(getCurrentValue, ngMakeShort);
   });
 
   // ========== ng-click ===========
@@ -190,7 +198,7 @@
     }
 
     ngShow();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngShow);
+    scope.$watch(getCurrentValue, ngShow);
   });
 
   // ========== ng-hide ===========
@@ -213,7 +221,7 @@
     }
 
     ngHide();
-    scope.$watch(getCurrentValue, getCurrentValue(), ngHide);
+    scope.$watch(getCurrentValue, ngHide);
   });
 
   // ========== ng-repeat ===========
@@ -243,7 +251,7 @@
     }
 
     ngRepeat();
-    scope.$watch(getCurrentValue, scope[dataAsArray[1]], ngRepeat);
+    scope.$watch(getCurrentValue, ngRepeat);
   });
 
   window.smallAngular = smallAngular;
