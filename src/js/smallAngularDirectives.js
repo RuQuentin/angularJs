@@ -23,10 +23,20 @@ smallAngular.directive('ng-init', function(scope, node, attrs) {
 smallAngular.directive('ng-model', function(scope, node, attrs) {
   const data = node.getAttribute('ng-model');
 
+  function getCurrentValue() {
+    return scope[data];
+  }
+
+  function updateValue() {
+    node.value = scope[data];
+  }
+
   node.addEventListener('keyup', () => {
     scope[data] = node.value;
     scope.$apply();
   });
+
+  scope.$watch(getCurrentValue, getCurrentValue(), updateValue);
 });
 
 // ========== ng-bind ===========

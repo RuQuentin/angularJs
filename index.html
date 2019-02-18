@@ -13,9 +13,14 @@
 <body ng-app ng-init="name='Ivan'; textLength=10">
 	<div class="container">
 
-		<label class="input-label">Enter your name here
-			<input ng-model="name" class="input-field" value="Kir" />
-		</label>
+		<div class="input-wrapper">
+			<label class="input-label">Enter your name here
+				<input ng-model="name" class="input-field" value="Kir" />
+			</label>
+			<label class="input-label">...or here
+				<input ng-model="name" class="input-field" value="Kir" />
+			</label>
+		</div>
 
 		<div class="greeting-wrapper">
 			<p ng-show="name!==''" class="greeting">Hello, <span
