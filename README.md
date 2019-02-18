@@ -16,7 +16,7 @@ This project includes:
 * addUserFunction
 
 
-* **directives**
+**directives**
 * ng-init
 * ng-model
 * ng-mind
@@ -28,7 +28,7 @@ This project includes:
 * ng-repeat
 
 
-* **scope methods**
+**scope methods**
 * $watch
 * $apply
 
