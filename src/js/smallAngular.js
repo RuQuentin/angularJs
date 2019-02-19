@@ -5,6 +5,28 @@
   const watchers = [];
   const rootScope = window;
 
+  // ==================================
+
+  rootScope.setNameIvan = function() {
+    this.name = 'ivan';
+  };
+
+  rootScope.setNameToEmpty = function() {
+    this.name = '';
+  };
+
+  rootScope.increaseTextLength = function() {
+    this.textLength += 5;
+  };
+
+  rootScope.decreaseTextLength = function() {
+    if (this.textLength > 0) {
+      this.textLength -= 5;
+    }
+  };
+
+  // ==================================
+
   rootScope.$watch = (name, watcher) => {
     watchers.push({ name, watcher });
   };
@@ -54,21 +76,12 @@
     },
 
 
-    addUserFunction(fn) {
-      if (typeof fn !== 'function') {
-        throw new Error(`${fn} is not a function`);
-      }
-
-      rootScope[fn] = fn.bind('rootScope');
-    },
-
-
     addNgStyles() {
       const styles = `
       <style type="text/css">
-      .ng-hide {
-        display: none !important;
-      }
+        .ng-hide {
+          display: none !important;
+        }
       </style>
       `;
 
@@ -104,37 +117,25 @@
   smallAngular.directive('ng-model', function(scope, node, attrs) {
     const data = node.getAttribute('ng-model');
 
-    function getCurrentValue() {
-      return scope[data];
-    }
-
-    function updateValue() {
-      node.value = scope[data];
-    }
-
     node.addEventListener('keyup', () => {
       scope[data] = node.value;
       scope.$apply();
     });
 
-    scope.$watch(getCurrentValue, updateValue);
+    scope.$watch(data, () => {
+      node.value = scope[data];
+    });
   });
 
   // ========== ng-bind ===========
 
   smallAngular.directive('ng-bind', function(scope, node, attrs) {
     const data = node.getAttribute('ng-bind');
+    node.textContent = scope[data];
 
-    function getCurrentValue() {
-      return scope[data];
-    }
-
-    function updateText() {
-      node.textContent = getCurrentValue();
-    }
-
-    updateText();
-    scope.$watch(getCurrentValue, updateText);
+    scope.$watch(data, () => {
+      node.textContent = scope[data];
+    });
   });
 
   // ========== ng-make-short ===========
@@ -142,12 +143,8 @@
   smallAngular.directive('ng-make-short', function(scope, node, attrs) {
     const { textContent } = node;
 
-    function getCurrentValue() {
-      return eval(attrs.length);
-    }
-
     function ngMakeShort() {
-      const length = getCurrentValue();
+      const length = eval(attrs.length);
       node.textContent = textContent.slice(0, length).concat('...');
 
       if (length > textContent.length - 3) {
@@ -156,7 +153,7 @@
     }
 
     ngMakeShort();
-    scope.$watch(getCurrentValue, ngMakeShort);
+    scope.$watch(() => eval(attrs.length), ngMakeShort);
   });
 
   // ========== ng-click ===========
@@ -165,7 +162,7 @@
     const data = node.getAttribute('ng-click');
 
     node.addEventListener('click', () => {
-      eval(data);
+      eval(scope[data.match(/.+[^())]/i)]());
       scope.$apply();
     });
   });
@@ -183,22 +180,20 @@
   smallAngular.directive('ng-show', function(scope, node, attrs) {
     const data = node.getAttribute('ng-show');
 
-    function getCurrentValue() {
-      return eval(data);
-    }
-
     function ngShow() {
-      const result = getCurrentValue();
-      const hasToBeShown = result && node.classList.contains('ng-hide');
-      const hasToBeHidden = !result && !node.classList.contains('ng-hide');
+      const result = eval(data);
 
-      if (hasToBeShown || hasToBeHidden) {
-        node.classList.toggle('ng-hide');
+      if (result) {
+        node.classList.remove('ng-hide');
+      }
+
+      if (!result) {
+        node.classList.add('ng-hide');
       }
     }
 
     ngShow();
-    scope.$watch(getCurrentValue, ngShow);
+    scope.$watch(() => eval(data), ngShow);
   });
 
   // ========== ng-hide ===========
@@ -206,52 +201,42 @@
   smallAngular.directive('ng-hide', function(scope, node, attrs) {
     const data = node.getAttribute('ng-hide');
 
-    function getCurrentValue() {
-      return eval(data);
-    }
+    function ngHide() {
+      const result = eval(data);
 
-    function ngHide(node) {
-      const result = getCurrentValue();
-      const hasToBeHidden = result && !node.classList.contains('ng-hide');
-      const hasToBeShown = !result && node.classList.contains('ng-hide');
+      if (!result) {
+        node.classList.remove('ng-hide');
+      }
 
-      if (hasToBeHidden || hasToBeShown) {
-        node.classList.toggle('ng-hide');
+      if (result) {
+        node.classList.add('ng-hide');
       }
     }
 
     ngHide();
-    scope.$watch(getCurrentValue, ngHide);
+    scope.$watch(() => eval(data), ngHide);
   });
 
   // ========== ng-repeat ===========
 
   smallAngular.directive('ng-repeat', function(scope, node, attrs) {
-    const data = node.getAttribute('ng-repeat');
-    const dataAsArray = data.split(' in ');
-    scope[dataAsArray[0]] = null;
-
     const { parentNode } = node;
-    const cleanClone = node.cloneNode(false);
-    cleanClone.removeAttribute('ng-repeat');
-    node.classList.add('ng-hide');
-
-    function getCurrentValue() {
-      return scope[dataAsArray[1]];
-    }
+    const data = node.getAttribute('ng-repeat');
+    const [item, items] = data.split(' in ');
+    scope[item] = null;
 
     function ngRepeat() {
       parentNode.innerHTML = '';
 
-      for (scope[dataAsArray[0]] of scope[dataAsArray[1]]) {
-        const newNode = cleanClone.cloneNode(false);
-        newNode.textContent = scope[dataAsArray[0]];
+      for (scope[item] of scope[items]) {
+        const newNode = node.cloneNode(false);
+        newNode.textContent = scope[item];
         parentNode.appendChild(newNode);
       }
     }
 
     ngRepeat();
-    scope.$watch(getCurrentValue, ngRepeat);
+    scope.$watch(scope[items], ngRepeat);
   });
 
   window.smallAngular = smallAngular;
