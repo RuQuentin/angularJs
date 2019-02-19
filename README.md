@@ -14,7 +14,6 @@ This project includes:
 * bindCurlyBracedVariables
 * addNgStyles
 * bootstrap
-* addUserFunction
 
 
 **directives**
